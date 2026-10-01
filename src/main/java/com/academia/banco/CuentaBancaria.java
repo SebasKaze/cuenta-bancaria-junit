@@ -27,6 +27,7 @@ public class CuentaBancaria {
     private BigDecimal saldo = new BigDecimal("0.00");
     private int retiros = 0;
     private final List<Movimiento> movimientos = new ArrayList<>();
+    private boolean cerrada = false;
 
     public CuentaBancaria(String titular) {
         if (titular == null || titular.isBlank()) {
@@ -34,14 +35,19 @@ public class CuentaBancaria {
         }
         this.titular = titular.strip();
     }
-
     public void depositar(BigDecimal monto) {
+        if (this.cerrada) {
+            throw new CuentaCerradaException(this.titular);
+        }
         BigDecimal m = validarMonto(monto);
         saldo = saldo.add(m);
         movimientos.add(new Movimiento(TipoMovimiento.DEPOSITO, m));
     }
 
     public void retirar(BigDecimal monto) {
+        if (this.cerrada) {
+            throw new CuentaCerradaException(this.titular);
+        }
         BigDecimal m = validarMonto(monto);
         if (m.compareTo(LIMITE_POR_RETIRO) > 0) {
             throw new LimiteExcedidoException(m, LIMITE_POR_RETIRO);
@@ -60,14 +66,23 @@ public class CuentaBancaria {
     }
 
     public void transferir(BigDecimal monto, CuentaBancaria destino) {
+        if (this.cerrada) {
+            throw new CuentaCerradaException(this.titular); // Por si la de origen está cerrada
+        }
+        
         if (destino == null) {
             throw new IllegalArgumentException("La cuenta destino es obligatoria");
+        }
+        if (destino.estaCerrada()) {
+            throw new CuentaCerradaException(destino.getTitular()); // Validación de la prueba 6
         }
         if (destino == this) {
             throw new IllegalArgumentException("No puedes transferirte a la misma cuenta");
         }
         BigDecimal m = validarMonto(monto);
-        
+        if (m.compareTo(saldo) > 0) {
+            throw new SaldoInsuficienteException(saldo, m);
+        }
         if (m.compareTo(saldo) > 0) {
             throw new SaldoInsuficienteException(saldo, m);
         }
@@ -101,6 +116,21 @@ public class CuentaBancaria {
         return List.copyOf(movimientos);
     }
 
+    public void cerrar() {
+        if (this.cerrada) {
+            throw new CuentaCerradaException(this.titular);
+        }
+        if (this.saldo.compareTo(BigDecimal.ZERO) > 0) {
+            throw new IllegalStateException("No puedes cerrar una cuenta con saldo: $" + this.saldo);
+        }
+        this.cerrada = true;
+    }
+
+    
+    public boolean estaCerrada() {
+        return this.cerrada;
+    }
+
     private static BigDecimal validarMonto(BigDecimal monto) {
         if (monto == null || monto.signum() <= 0) {
             throw new IllegalArgumentException("El monto debe ser mayor que cero");
@@ -110,4 +140,5 @@ public class CuentaBancaria {
         }
         return monto.setScale(2);
     }
+    
 }

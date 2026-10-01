@@ -16,8 +16,12 @@ class InteresTest {
     @ParameterizedTest(name = "saldo ${0} → interés ${1}")
     @CsvSource({
             "0.00,          0.00",
+            "999.99,        0.00",
             "1000.00,       5.00",
-            "50000.00,    500.00"
+            "1234.56,       6.17",
+            "49999.99,    250.00",
+            "50000.00,    500.00",
+            "123456.78,  1234.57"
     })
     void calculaSegunLaTabla(BigDecimal saldo, BigDecimal esperado) {
         assertEquals(esperado, Interes.mensual(saldo));

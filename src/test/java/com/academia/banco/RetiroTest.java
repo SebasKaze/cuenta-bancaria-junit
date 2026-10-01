@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+
 
 import java.math.BigDecimal;
 
@@ -105,7 +105,7 @@ class RetiroTest {
     @Test
     void unMontoConFraccionDeCentavoSeRechaza() {
         CuentaBancaria cuenta = new CuentaBancaria("Ana");
-        cuenta.depositar(new BigDecimal("20.00"));
+        cuenta.depositar(new BigDecimal("1000.00"));
 
         assertThrows(IllegalArgumentException.class, () -> cuenta.retirar(new BigDecimal("10.005")));
         // TODO: regla 2 del banco — un retiro de 10.005 (fracción de centavo) se rechaza

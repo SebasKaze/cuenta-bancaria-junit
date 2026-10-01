@@ -88,13 +88,13 @@ class TransferenciaTest {
         @Test
         @DisplayName("no se puede transferir a la misma cuenta")
         void noSePuedeTransferirALaMismaCuenta() {
-            assertThrows(IllegalArgumentException.class, () -> origen.transferir(new BigDecimal("50.00"), origen));
+            assertThrows(IllegalArgumentException.class, () -> origen.transferir(new BigDecimal("100.00"), origen));
         }
 
         @Test
         @DisplayName("la cuenta destino es obligatoria")
         void laCuentaDestinoEsObligatoria() {
-            assertThrows(IllegalArgumentException.class, () -> origen.transferir(new BigDecimal("50.00"), null));
+            assertThrows(IllegalArgumentException.class, () -> origen.transferir(new BigDecimal("100.00"), null));
         }
 
         @Test

@@ -67,6 +67,7 @@ public class CuentaBancaria {
             throw new IllegalArgumentException("No puedes transferirte a la misma cuenta");
         }
         BigDecimal m = validarMonto(monto);
+        
         if (m.compareTo(saldo) > 0) {
             throw new SaldoInsuficienteException(saldo, m);
         }
